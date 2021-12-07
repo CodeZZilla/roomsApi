@@ -1,0 +1,36 @@
+version: "3"
+
+services:
+
+  api-database:
+    image: mongo:latest
+    container_name: "api-database"
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: 6B4Xmk4E9h
+    ports:
+      - "27017:27017"
+    volumes:
+      - "./data:/data/db"
+
+  rooms-bot-api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - api-database
+
+#  client:
+#    container_name: client
+#    image: client-dev
+#    build:
+#      context: ./src/client/
+#      dockerfile: Dockerfile
+#    depends_on:
+#      - rooms-bot-api
+#    ports:
+#      - "3000:3000"
