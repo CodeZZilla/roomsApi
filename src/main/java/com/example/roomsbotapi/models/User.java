@@ -3,11 +3,8 @@ package com.example.roomsbotapi.models;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -44,6 +41,6 @@ public class User {
     private String language;
     private int freeCounterSearch;
     private int userStatus;
-    private Date usingTime;
+//    private Date usingTime;
 
 }

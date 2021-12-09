@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +31,7 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<User> getOneUser(@PathVariable String idTelegram) {
         User user = userService.findByIdTelegram(idTelegram);
-        user.setUsingTime(new Date());
+//        user.setUsingTime(new Date());
 
         return ResponseEntity.ok(user);
     }
@@ -53,7 +52,7 @@ public class UserController {
     @PostMapping("/add")
     public ResponseEntity<User> addNewUser(@RequestBody User user) {
         userService.todayCompilationUser(user);
-        user.setUsingTime(new Date());
+//        user.setUsingTime(new Date());
         return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
     }
 
@@ -85,7 +84,7 @@ public class UserController {
         userFromDb.setLanguage(user.getLanguage());
         userFromDb.setEmail(user.getEmail());
         userFromDb.setPhoneNumber(user.getPhoneNumber());
-        userFromDb.setUsingTime(new Date());
+//        userFromDb.setUsingTime(new Date());
 
         userService.todayCompilationUser(userFromDb);
         userService.save(userFromDb);
