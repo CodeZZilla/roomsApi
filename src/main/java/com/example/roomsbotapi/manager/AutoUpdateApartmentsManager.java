@@ -41,19 +41,27 @@ public class AutoUpdateApartmentsManager {
 
     private final ApartmentsService apartmentsService;
     private final UserService userService;
-    private final UserAuthRepository repository;
 
     @Autowired
-    public AutoUpdateApartmentsManager(ApartmentsService apartmentsService, UserService userService, UserAuthRepository repository) {
+    public AutoUpdateApartmentsManager(ApartmentsService apartmentsService, UserService userService) {
         this.apartmentsService = apartmentsService;
         this.userService = userService;
-        this.repository = repository;
     }
 
     @Scheduled(fixedDelay = 3000000, initialDelay = 1000)
     public void apiParsingXml() {
+
+        //Kiev
         urlParser("https://v3api.citybase.com.ua/xml?city=Kyiv&section=rent_living&company=380935177996&published_in_days=5");
         urlParser("https://v3api.citybase.com.ua/xml?city=Kyiv&section=sale_living&company=380935177996&published_in_days=5");
+
+        //Odessa
+        urlParser("https://v3api.citybase.com.ua/xml?city=Odessa&section=rent_living&company=380935177996&published_in_days=5");
+        urlParser("https://v3api.citybase.com.ua/xml?city=Odessa&section=sale_living&company=380935177996&published_in_days=5");
+
+        //Kharkov
+        urlParser("https://v3api.citybase.com.ua/xml?city=Kharkov&section=sale_living&company=380935177996&published_in_days=5");
+        urlParser("https://v3api.citybase.com.ua/xml?city=Kharkov&section=rent_living&company=380935177996&published_in_days=5");
     }
 
 

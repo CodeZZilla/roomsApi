@@ -6,10 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -22,12 +26,11 @@ public class AdminController {
 
     private final UserService userService;
 
+
     @GetMapping("/dateStatistic")
     public Map<String, Integer> getDateStatistic() {
         Map<String, Integer> integerMap = new HashMap<>();
         List<User> users = userService.findAll();
-
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
         Calendar calendarNow = Calendar.getInstance();
         calendarNow.setTime(new Date());
@@ -53,10 +56,6 @@ public class AdminController {
             calendarUser.setTime(item.getCreationDate());
             return monthNow == calendarUser.get(Calendar.MONTH) + 1 && yearNow == calendarUser.get(Calendar.YEAR);
         }).count();
-
-//        int forDay = (int) users.stream().filter(x -> LocalDate.now().dayOfYear().equals(LocalDate.parse(dateFormat.format(x.getCreationDate())).dayOfYear())).count();
-//        int forWeek = (int) users.stream().filter(x -> LocalDate.now().weekyear().equals(LocalDate.parse(dateFormat.format(x.getCreationDate())).weekyear())).count();
-//        int forMonth = (int) users.stream().filter(x -> LocalDate.now().monthOfYear().equals(LocalDate.parse(dateFormat.format(x.getCreationDate())).monthOfYear())).count();
 
         integerMap.put("allUsers", users.size());
         integerMap.put("forDay", days);

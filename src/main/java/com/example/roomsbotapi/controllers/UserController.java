@@ -1,7 +1,6 @@
 package com.example.roomsbotapi.controllers;
 
 import com.example.roomsbotapi.models.User;
-import com.example.roomsbotapi.services.GroupsService;
 import com.example.roomsbotapi.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -11,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -21,7 +21,6 @@ import java.util.stream.Collectors;
 public class UserController {
 
     private final UserService userService;
-    private final GroupsService groupsService;
 
     @GetMapping
     @ResponseBody
@@ -33,10 +32,7 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<User> getOneUser(@PathVariable String idTelegram) {
         User user = userService.findByIdTelegram(idTelegram);
-
-        if (user == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        user.setUsingTime(new Date());
 
         return ResponseEntity.ok(user);
     }
@@ -57,7 +53,7 @@ public class UserController {
     @PostMapping("/add")
     public ResponseEntity<User> addNewUser(@RequestBody User user) {
         userService.todayCompilationUser(user);
-
+        user.setUsingTime(new Date());
         return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
     }
 
@@ -89,6 +85,7 @@ public class UserController {
         userFromDb.setLanguage(user.getLanguage());
         userFromDb.setEmail(user.getEmail());
         userFromDb.setPhoneNumber(user.getPhoneNumber());
+        userFromDb.setUsingTime(new Date());
 
         userService.todayCompilationUser(userFromDb);
         userService.save(userFromDb);

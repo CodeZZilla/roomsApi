@@ -30,8 +30,13 @@ public class MessagesController {
         System.out.println(messagesList);
 
         if (messagesList.size() == 0)
-            return ResponseEntity.ok(new Messages());
+            return ResponseEntity.ok(null);
 
         return ResponseEntity.ok(messagesList.get(messagesList.size() - 1));
+    }
+
+    @DeleteMapping("/deleteAll")
+    public void deleteAll() {
+        messageService.deleteAll();
     }
 }

@@ -135,25 +135,10 @@ public class UserService {
 
             }
 
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-
             List<Long> internalId = apartments.stream().map(Apartments::getInternalId).collect(Collectors.toList());
-            List<Long> idsNewApartments = new ArrayList<>();
-
-
-//               apartments.forEach(item -> {
-//                        if (org.joda.time.LocalDate.now().equals(LocalDate.parse(format.format(item.getCreationDate())))) {
-//                            idsNewApartments.add(item.getInternalId());
-//                        }
-//                });
-
-//
-//            System.out.println(idsNewApartments);
             Collections.shuffle(internalId);
 
             user.setTodayCompilation(internalId);
-
-//            repository.save(user);
         }
     }
 

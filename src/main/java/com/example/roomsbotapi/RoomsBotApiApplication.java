@@ -20,8 +20,6 @@ import java.util.Date;
 public class RoomsBotApiApplication {
 
     public static void main(String[] args) {
-        System.out.println(System.currentTimeMillis());
-        System.out.println(new Date());
         SpringApplication.run(RoomsBotApiApplication.class, args);
     }
 
@@ -39,6 +37,48 @@ public class RoomsBotApiApplication {
                 user.setUsername("rooms");
                 user.setPassword(new BCryptPasswordEncoder().encode("zsxadc1234"));
 
+
+                user.setRoles(Collections.singleton(role));
+
+                repository.save(user);
+            }
+
+            if (!repository.existsByUsername("client")) {
+                Role role = new Role();
+                role.setName(ERole.ROLE_CLIENT);
+                roleRepository.save(role);
+
+                UsersAuth user = new UsersAuth();
+                user.setUsername("client");
+                user.setPassword(new BCryptPasswordEncoder().encode("client228"));
+
+                user.setRoles(Collections.singleton(role));
+
+                repository.save(user);
+            }
+
+            if (!repository.existsByUsername("manager")) {
+                Role role = new Role();
+                role.setName(ERole.ROLE_MANAGER);
+                roleRepository.save(role);
+
+                UsersAuth user = new UsersAuth();
+                user.setUsername("manager");
+                user.setPassword(new BCryptPasswordEncoder().encode("manager228"));
+
+                user.setRoles(Collections.singleton(role));
+
+                repository.save(user);
+            }
+
+            if (!repository.existsByUsername("marketolog")) {
+                Role role = new Role();
+                role.setName(ERole.ROLE_MARKETOLOG);
+                roleRepository.save(role);
+
+                UsersAuth user = new UsersAuth();
+                user.setUsername("marketolog");
+                user.setPassword(new BCryptPasswordEncoder().encode("marketolog228"));
 
                 user.setRoles(Collections.singleton(role));
 
