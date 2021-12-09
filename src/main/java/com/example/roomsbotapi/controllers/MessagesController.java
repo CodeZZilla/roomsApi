@@ -27,10 +27,9 @@ public class MessagesController {
     @ResponseBody
     public ResponseEntity<Messages> find() {
         List<Messages> messagesList = messageService.findAll();
-        System.out.println(messagesList);
 
         if (messagesList.size() == 0)
-            return ResponseEntity.ok(null);
+            return ResponseEntity.ok(new Messages());
 
         return ResponseEntity.ok(messagesList.get(messagesList.size() - 1));
     }
