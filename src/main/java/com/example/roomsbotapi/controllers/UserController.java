@@ -32,6 +32,9 @@ public class UserController {
     public ResponseEntity<User> getOneUser(@PathVariable String idTelegram) {
         User user = userService.findByIdTelegram(idTelegram);
 //        user.setUsingTime(new Date());
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
 
         return ResponseEntity.ok(user);
     }
