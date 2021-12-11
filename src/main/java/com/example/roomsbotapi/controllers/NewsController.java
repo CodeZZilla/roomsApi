@@ -22,6 +22,11 @@ public class NewsController {
         return newsRepository.findAll();
     }
 
+    @GetMapping("/{id}")
+    public News getOne(@PathVariable String id) {
+        return newsRepository.findById(id).get();
+    }
+
     @PostMapping("/add")
     public ResponseEntity<News> addNews(@RequestBody News news) {
         return new ResponseEntity<>(newsRepository.save(news), HttpStatus.CREATED);
@@ -46,8 +51,8 @@ public class NewsController {
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<?> delete(@PathVariable String id) {
+    public ResponseEntity<List<News>> delete(@PathVariable String id) {
         newsRepository.deleteById(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return ResponseEntity.ok(newsRepository.findAll());
     }
 }
