@@ -27,9 +27,6 @@ public class UserService {
         this.apartmentsService = apartmentsService;
     }
 
-    public void deleteById(String id) {
-        repository.deleteById(id);
-    }
 
     public List<User> findAll() {
         List<User> user = repository.findAll();
@@ -83,7 +80,7 @@ public class UserService {
                         for (String region : user.getRegion())
                             for (String metro : user.getMetroNames()) {
                                 apartments.addAll(apartmentsService.findByTypeCityCategoryPriceRegionMetro(type[0], user.getCity(), type[1], user.getPriceMin(), user.getPriceMax(), region, metro));
-                                apartments.addAll(apartmentsService.findByTypeCityCategoryPriceRegion(type[0], user.getCity(), type[1], user.getPriceMin(), user.getPriceMax(), region));
+                                apartments.addAll(apartmentsService.findByTypeCityCategoryPriceRegionMetro(type[0], user.getCity(), type[1], user.getPriceMin(), user.getPriceMax(), region, ""));
                             }
                     else if (user.getRegion() == null && user.getMetroNames() != null)
                         for (String metro : user.getMetroNames())
@@ -100,7 +97,7 @@ public class UserService {
                                 for (String metro : user.getMetroNames())
                                     for (int room : user.getRooms()) {
                                         apartments.addAll(apartmentsService.findByTypeCityCategoryPriceRoomsRegionMetro(type[0], user.getCity(), type[1], user.getPriceMin(), user.getPriceMax(), room, region, metro));
-                                        apartments.addAll(apartmentsService.findByTypeCityCategoryPriceRoomsRegion(type[0], user.getCity(), type[1], user.getPriceMin(), user.getPriceMax(), room, region));
+                                        apartments.addAll(apartmentsService.findByTypeCityCategoryPriceRoomsRegionMetro(type[0], user.getCity(), type[1], user.getPriceMin(), user.getPriceMax(), room, region, ""));
                                     }
 
                         else if (user.getRegion() == null && user.getMetroNames() != null)
@@ -125,7 +122,7 @@ public class UserService {
                             for (String metro : user.getMetroNames())
                                 for (int room : user.getRooms()) {
                                     apartments.addAll(apartmentsService.findByTypeCityPriceRoomsRegionMetro(type[0], user.getCity(), user.getPriceMin(), user.getPriceMax(), room, region, metro));
-                                    apartments.addAll(apartmentsService.findByTypeCityPriceRoomsRegion(type[0], user.getCity(), user.getPriceMin(), user.getPriceMax(), room, region));
+                                    apartments.addAll(apartmentsService.findByTypeCityPriceRoomsRegionMetro(type[0], user.getCity(), user.getPriceMin(), user.getPriceMax(), room, region, ""));
                                 }
                     else if (user.getRegion() == null && user.getMetroNames() != null)
                         for (String metro : user.getMetroNames())
