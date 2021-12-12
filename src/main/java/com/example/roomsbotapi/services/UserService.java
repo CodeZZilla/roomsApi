@@ -5,13 +5,13 @@ import com.example.roomsbotapi.models.User;
 import com.example.roomsbotapi.repository.ApartmentsRepository;
 import com.example.roomsbotapi.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,8 +81,10 @@ public class UserService {
 
                     if (user.getRegion() != null && user.getMetroNames() != null)
                         for (String region : user.getRegion())
-                            for (String metro : user.getMetroNames())
+                            for (String metro : user.getMetroNames()) {
                                 apartments.addAll(apartmentsService.findByTypeCityCategoryPriceRegionMetro(type[0], user.getCity(), type[1], user.getPriceMin(), user.getPriceMax(), region, metro));
+                                apartments.addAll(apartmentsService.findByTypeCityCategoryPriceRegion(type[0], user.getCity(), type[1], user.getPriceMin(), user.getPriceMax(), region));
+                            }
                     else if (user.getRegion() == null && user.getMetroNames() != null)
                         for (String metro : user.getMetroNames())
                             apartments.addAll(apartmentsService.findByTypeCityCategoryPriceMetro(type[0], user.getCity(), type[1], user.getPriceMin(), user.getPriceMax(), metro));
@@ -96,8 +98,11 @@ public class UserService {
                         if (user.getRegion() != null && user.getMetroNames() != null)
                             for (String region : user.getRegion())
                                 for (String metro : user.getMetroNames())
-                                    for (int room : user.getRooms())
+                                    for (int room : user.getRooms()) {
                                         apartments.addAll(apartmentsService.findByTypeCityCategoryPriceRoomsRegionMetro(type[0], user.getCity(), type[1], user.getPriceMin(), user.getPriceMax(), room, region, metro));
+                                        apartments.addAll(apartmentsService.findByTypeCityCategoryPriceRoomsRegion(type[0], user.getCity(), type[1], user.getPriceMin(), user.getPriceMax(), room, region));
+                                    }
+
                         else if (user.getRegion() == null && user.getMetroNames() != null)
                             for (String metro : user.getMetroNames())
                                 for (int room : user.getRooms())
@@ -118,8 +123,10 @@ public class UserService {
                     if (user.getRegion() != null && user.getMetroNames() != null)
                         for (String region : user.getRegion())
                             for (String metro : user.getMetroNames())
-                                for (int room : user.getRooms())
+                                for (int room : user.getRooms()) {
                                     apartments.addAll(apartmentsService.findByTypeCityPriceRoomsRegionMetro(type[0], user.getCity(), user.getPriceMin(), user.getPriceMax(), room, region, metro));
+                                    apartments.addAll(apartmentsService.findByTypeCityPriceRoomsRegion(type[0], user.getCity(), user.getPriceMin(), user.getPriceMax(), room, region));
+                                }
                     else if (user.getRegion() == null && user.getMetroNames() != null)
                         for (String metro : user.getMetroNames())
                             for (int room : user.getRooms())

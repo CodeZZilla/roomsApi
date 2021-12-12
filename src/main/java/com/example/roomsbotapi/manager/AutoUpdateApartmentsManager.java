@@ -2,11 +2,7 @@ package com.example.roomsbotapi.manager;
 
 import com.example.roomsbotapi.models.Apartments.Apartments;
 import com.example.roomsbotapi.models.Apartments.pojos.*;
-import com.example.roomsbotapi.models.Security.ERole;
-import com.example.roomsbotapi.models.Security.Role;
-import com.example.roomsbotapi.models.Security.UsersAuth;
 import com.example.roomsbotapi.models.User;
-import com.example.roomsbotapi.repository.UserAuthRepository;
 import com.example.roomsbotapi.services.ApartmentsService;
 import com.example.roomsbotapi.services.UserService;
 import lombok.SneakyThrows;
@@ -14,9 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -32,7 +26,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -91,12 +84,6 @@ public class AutoUpdateApartmentsManager {
 
         userService.saveAll(users);
     }
-
-//
-//    @Scheduled(fixedDelay = 86400000, initialDelay = 7000)
-//    public void todayCompilation() {
-//        userService.todayCompilation();
-//    }
 
     @Scheduled(cron = "0 0 0 * * *", zone = "GMT+3")
     public void updateDaysOfSubscription() {
@@ -218,7 +205,7 @@ public class AutoUpdateApartmentsManager {
 
                         //parse and set location
                         String country = "", region = "", locationName = "", subLocationName = "", nonAdminSubLocality = "",
-                                address = "", house = "", nameStation = "", distance = "";
+                                address = "", house = "", nameStation, distance;
                         try {
                             country = ((Element) eElement.getElementsByTagName("location").item(0)).getElementsByTagName("country").item(0).getTextContent();
                         } catch (Exception ignored) {

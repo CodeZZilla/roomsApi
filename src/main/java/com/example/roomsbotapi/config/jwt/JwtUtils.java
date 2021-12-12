@@ -21,7 +21,7 @@ public class JwtUtils {
     @Value("${rooms.app.jwtExpirationMs}")
     private int jwtExpirationMs;
 
-    public String generatetJwtToken(Authentication authentication) {
+    public String generateJwtToken(Authentication authentication) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
         return Jwts.builder()
