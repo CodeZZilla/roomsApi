@@ -3,11 +3,10 @@ package com.example.roomsbotapi.models;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.joda.time.LocalDateTime;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 @Document(collection = "Users")
@@ -22,7 +21,9 @@ public class User {
     private String email;
     private String phoneNumber;
 
-    private Date creationDate = Calendar.getInstance().getTime();
+//    private LocalDateTime creationDate = LocalDateTime.now();
+//    private Date creationDate = new Date();
+    private LocalDateTime creationDate = LocalDateTime.now();
 
     private String type;
     private String name;
