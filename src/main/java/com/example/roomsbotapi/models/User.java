@@ -21,8 +21,6 @@ public class User {
     private String email;
     private String phoneNumber;
 
-//    private LocalDateTime creationDate = LocalDateTime.now();
-//    private Date creationDate = new Date();
     private LocalDateTime creationDate = LocalDateTime.now();
 
     private String type;
@@ -42,6 +40,6 @@ public class User {
     private String language;
     private int freeCounterSearch;
     private int userStatus;
-//    private Date usingTime;
+//    private LocalDateTime lastActivity;
 
 }

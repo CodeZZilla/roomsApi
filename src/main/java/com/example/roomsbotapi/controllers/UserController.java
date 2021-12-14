@@ -3,6 +3,7 @@ package com.example.roomsbotapi.controllers;
 import com.example.roomsbotapi.models.User;
 import com.example.roomsbotapi.services.UserService;
 import lombok.AllArgsConstructor;
+import org.joda.time.LocalDateTime;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,6 +26,11 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<List<User>> getAllUsers() {
         return ResponseEntity.ok(userService.findAll());
+    }
+
+    @GetMapping("/byId/{id}")
+    public ResponseEntity<User> getUser(@PathVariable String id) {
+        return ResponseEntity.ok(userService.findById(id));
     }
 
     @GetMapping("/{idTelegram}")
@@ -87,7 +93,8 @@ public class UserController {
         userFromDb.setLanguage(user.getLanguage());
         userFromDb.setEmail(user.getEmail());
         userFromDb.setPhoneNumber(user.getPhoneNumber());
-//        userFromDb.setUsingTime(new Date());
+
+//        userFromDb.setLastActivity(LocalDateTime.now());
 
         userService.todayCompilationUser(userFromDb);
         userService.save(userFromDb);
