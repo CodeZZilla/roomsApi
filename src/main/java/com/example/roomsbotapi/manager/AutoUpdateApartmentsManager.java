@@ -81,7 +81,7 @@ public class AutoUpdateApartmentsManager {
 
         for (var item : users) {
             userService.todayCompilationUser(item);
-            System.out.println("today compilation " + item.getName());
+            System.out.println("today compilation " + item.getName() + "\n" + item.getTodayCompilation().size());
         }
 
         System.out.println("save users");
