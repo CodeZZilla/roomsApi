@@ -6,6 +6,7 @@ import com.example.roomsbotapi.repository.ApartmentsRepository;
 import com.example.roomsbotapi.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -65,6 +66,7 @@ public class UserService {
         repository.saveAll(users);
     }
 
+    @Async
     public void todayCompilationUser(User user) {
         if (user.getType() != null && user.getCity() != null
                 && user.getPriceMin() >= 0 && user.getPriceMax() != 0) {

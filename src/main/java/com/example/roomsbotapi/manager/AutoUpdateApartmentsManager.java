@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -41,38 +42,50 @@ public class AutoUpdateApartmentsManager {
         this.userService = userService;
     }
 
-    @Scheduled(fixedDelay = 3000000, initialDelay = 1000)
+    @Scheduled(fixedDelay = 3000000)
     public void apiParsingXml() {
 
         //Kiev
+        log.info("Parsing Kiev");
         urlParser("https://v3api.citybase.com.ua/xml?city=Kyiv&section=rent_living&company=380935177996&published_in_days=5");
         urlParser("https://v3api.citybase.com.ua/xml?city=Kyiv&section=sale_living&company=380935177996&published_in_days=5");
 
+
         //Odessa
+        log.info("Parsing Odessa");
         urlParser("https://v3api.citybase.com.ua/xml?city=Odessa&section=rent_living&company=380935177996&published_in_days=5");
         urlParser("https://v3api.citybase.com.ua/xml?city=Odessa&section=sale_living&company=380935177996&published_in_days=5");
 
         //Kharkov
+        log.info("Parsing Kharkov");
         urlParser("https://v3api.citybase.com.ua/xml?city=Kharkov&section=sale_living&company=380935177996&published_in_days=5");
         urlParser("https://v3api.citybase.com.ua/xml?city=Kharkov&section=rent_living&company=380935177996&published_in_days=5");
     }
 
 
     @SneakyThrows
-    @Scheduled(fixedDelay = 86400000, initialDelay = 4000)
+    @Scheduled(fixedDelay = 86400000, initialDelay = 15000)
     public void deleteOldApartments() {
         List<Apartments> apartmentsList = apartmentsService.findAll();
+        List<User> users = userService.findAll();
 
         for (Apartments apartment : apartmentsList) {
             LocalDate localDateLastUpdate = LocalDate.parse(apartment.getLastUpdateDate());
             int days = Days.daysBetween(localDateLastUpdate, LocalDate.now()).getDays();
 
-            if (days >= 10) {
+            if (days >= 6) {
                 System.out.println(days + " - days\n" + apartment.getLastUpdateDate() + " - deleted");
-                apartmentsService.delete(apartment);
+                apartmentsService.deleteByInternalId(apartment.getInternalId());
             }
         }
 
+        for (var item : users) {
+            userService.todayCompilationUser(item);
+            System.out.println("today compilation " + item.getName());
+        }
+
+        System.out.println("save users");
+        userService.saveAll(users);
     }
 
     @Scheduled(cron = "0 0 0 * * *", zone = "GMT+3")
@@ -103,7 +116,7 @@ public class AutoUpdateApartmentsManager {
     }
 
 
-
+    @Async
     public void urlParser(String urlString) {
         try {
 
@@ -130,8 +143,6 @@ public class AutoUpdateApartmentsManager {
 
                 doc.getDocumentElement().normalize();
                 NodeList nList = doc.getElementsByTagName("offer");
-
-                System.out.println(nList.getLength());
 
                 for (int temp = 0; temp < nList.getLength(); temp++) {
                     Apartments apartments = new Apartments();

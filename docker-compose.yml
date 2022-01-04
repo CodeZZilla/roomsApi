@@ -23,14 +23,3 @@ services:
       - "8080:8080"
     depends_on:
       - api-database
-
-#  client:
-#    container_name: client
-#    image: client-dev
-#    build:
-#      context: ./src/client/
-#      dockerfile: Dockerfile
-#    depends_on:
-#      - rooms-bot-api
-#    ports:
-#      - "3000:3000"

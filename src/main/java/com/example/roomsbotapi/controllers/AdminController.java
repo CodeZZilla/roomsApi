@@ -28,24 +28,14 @@ public class AdminController {
 
     @GetMapping("/dateStatistic")
     public Map<String, Integer> getDateStatistic() {
-        Map<String, Integer> integerMap = new HashMap<>();
+        Map<String, Integer> response = new HashMap<>();
         List<User> users = userService.findAll();
-
-//        for (User user : users) {
-//            LocalDateTime localDateTime = LocalDateTime.ofInstant(user.getCreationDate().toInstant(), ZoneId.systemDefault());
-//            user.setDateCreation(localDateTime);
-//            user.setCreationDate(null);
-//            userService.save(user);
-//            System.out.println(localDateTime);
-//        }
-
-
 
         int dayNow = LocalDate.now().getDayOfMonth();
         int monthNow = LocalDate.now().getMonthOfYear();
         int yearNow = LocalDate.now().getYear();
 
-        System.out.println(dayNow + " " + monthNow + " " +yearNow);
+        System.out.println(dayNow + " " + monthNow + " " + yearNow);
 
         int days = (int) users.stream().filter(item -> dayNow == item.getCreationDate().toLocalDate().getDayOfMonth() &&
                 monthNow == item.getCreationDate().toLocalDate().getMonthOfYear() &&
@@ -57,55 +47,36 @@ public class AdminController {
 
         int month = (int) users.stream().filter(item -> monthNow == item.getCreationDate().toLocalDate().getMonthOfYear() &&
                 yearNow == item.getCreationDate().toLocalDate().getYear()).count();
-//
-//        Calendar calendarUser = Calendar.getInstance();
 
-//        int days = (int) users.stream().filter(item -> {
-//            calendarUser.setTime(item.getCreationDate());
-//            return dayNow == calendarUser.get(Calendar.DAY_OF_MONTH) &&
-//                    monthNow == calendarUser.get(Calendar.MONTH) + 1 && yearNow == calendarUser.get(Calendar.YEAR);
-//        }).count();
-//
-//        int week = (int) users.stream().filter(item -> {
-//            calendarUser.setTime(item.getCreationDate());
-//            return yearNow == calendarUser.get(Calendar.YEAR) && monthNow == calendarUser.get(Calendar.MONTH) + 1
-//                    && calendarNow.get(Calendar.WEEK_OF_MONTH) == calendarUser.get(Calendar.WEEK_OF_MONTH);
-//        }).count();
-//
-//        int year = (int) users.stream().filter(item -> {
-//            calendarUser.setTime(item.getCreationDate());
-//            return monthNow == calendarUser.get(Calendar.MONTH) + 1 && yearNow == calendarUser.get(Calendar.YEAR);
-//        }).count();
+        response.put("allUsers", users.size());
+        response.put("forDay", days);
+        response.put("forWeek", week);
+        response.put("forMonth", month);
 
-        integerMap.put("allUsers", users.size());
-        integerMap.put("forDay", days);
-        integerMap.put("forWeek", week);
-        integerMap.put("forMonth", month);
-
-        return integerMap;
+        return response;
     }
 
     @GetMapping("/stagesAtWhichClientsStopped")
     public Map<String, Integer> stagesAtWhichClientsStopped() {
         List<User> users = userService.findAll();
-        Map<String, Integer> mapStages = new HashMap<>();
+        Map<String, Integer> response = new HashMap<>();
 
-        mapStages.put("zeroStage", (int) users.stream().map(User::getUserStatus).filter(user -> user == 0).count());
-        mapStages.put("firstStage", (int) users.stream().map(User::getUserStatus).filter(user -> user == 1).count());
-        mapStages.put("secondStage", (int) users.stream().map(User::getUserStatus).filter(user -> user == 2).count());
-        mapStages.put("thirdStage", (int) users.stream().map(User::getUserStatus).filter(user -> user == 3).count());
-        mapStages.put("fourthStage", (int) users.stream().map(User::getUserStatus).filter(user -> user == 4).count());
-        mapStages.put("fifthStage", (int) users.stream().map(User::getUserStatus).filter(user -> user == 5).count());
-        mapStages.put("sixthStage", (int) users.stream().map(User::getUserStatus).filter(user -> user == 6).count());
-        mapStages.put("seventhStage", (int) users.stream().map(User::getUserStatus).filter(user -> user == 7).count());
+        response.put("zeroStage", (int) users.stream().map(User::getUserStatus).filter(user -> user == 0).count());
+        response.put("firstStage", (int) users.stream().map(User::getUserStatus).filter(user -> user == 1).count());
+        response.put("secondStage", (int) users.stream().map(User::getUserStatus).filter(user -> user == 2).count());
+        response.put("thirdStage", (int) users.stream().map(User::getUserStatus).filter(user -> user == 3).count());
+        response.put("fourthStage", (int) users.stream().map(User::getUserStatus).filter(user -> user == 4).count());
+        response.put("fifthStage", (int) users.stream().map(User::getUserStatus).filter(user -> user == 5).count());
+        response.put("sixthStage", (int) users.stream().map(User::getUserStatus).filter(user -> user == 6).count());
+        response.put("seventhStage", (int) users.stream().map(User::getUserStatus).filter(user -> user == 7).count());
 
-        return mapStages;
+        return response;
     }
 
     @GetMapping("/dataForChats")
     public Map<String, List<Object>> dataForChats() {
         List<User> users = userService.findAll();
-        Map<String, List<Object>> datMap = new HashMap<>();
+        Map<String, List<Object>> response = new HashMap<>();
         List<Integer> usersCount = new ArrayList<>();
 
 //        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
@@ -124,10 +95,10 @@ public class AdminController {
         }
 
 
-        datMap.put("dates", Arrays.asList(dateList.toArray()));
-        datMap.put("users", Arrays.asList(usersCount.toArray()));
+        response.put("dates", Arrays.asList(dateList.toArray()));
+        response.put("users", Arrays.asList(usersCount.toArray()));
 
-        log.info(datMap.toString());
-        return datMap;
+        log.info(response.toString());
+        return response;
     }
 }

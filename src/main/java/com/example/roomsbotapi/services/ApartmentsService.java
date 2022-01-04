@@ -28,6 +28,11 @@ public class ApartmentsService {
         repository.delete(apartments);
     }
 
+    public void deleteByInternalId(Long id) {
+        repository.deleteByInternalId(id);
+    }
+
+
     public void save(Apartments apartments) {
         repository.save(apartments);
     }

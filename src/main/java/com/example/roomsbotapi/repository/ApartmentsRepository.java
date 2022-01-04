@@ -12,6 +12,8 @@ public interface ApartmentsRepository extends MongoRepository<Apartments, String
 
     Apartments findByInternalId(Long id);
 
+    void deleteByInternalId(Long id);
+
     //1
     @Query("{'type': ?0, 'location.locationName': ?1, 'category': ?2}")
     List<Apartments> findByTypeCityCategory(String type, String city, String category);
