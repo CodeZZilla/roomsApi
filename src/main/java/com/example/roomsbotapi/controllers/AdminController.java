@@ -6,13 +6,11 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.Days;
 import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
-import org.joda.time.format.DateTimeFormatter;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -79,21 +77,18 @@ public class AdminController {
         Map<String, List<Object>> response = new HashMap<>();
         List<Integer> usersCount = new ArrayList<>();
 
-//        DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-
-
         Set<LocalDate> dates = users.stream().map(x -> x.getCreationDate().toLocalDate())
                 .collect(Collectors.toSet());
 
-        List<LocalDate> dateList = dates.stream().filter(item -> Days.daysBetween(item, LocalDate.now()).getDays() <= 10).sorted().collect(Collectors.toList());
+        List<LocalDate> dateList = dates.stream()
+                .filter(item -> Days.daysBetween(item, LocalDate.now()).getDays() <= 10)
+                .sorted()
+                .collect(Collectors.toList());
 
         for (var date : dateList) {
-
             int countUsers = (int) users.stream().filter(x -> x.getCreationDate().toLocalDate().equals(date)).count();
             usersCount.add(countUsers);
-
         }
-
 
         response.put("dates", Arrays.asList(dateList.toArray()));
         response.put("users", Arrays.asList(usersCount.toArray()));

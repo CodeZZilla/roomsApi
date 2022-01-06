@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,7 +27,9 @@ public class UserController {
     @GetMapping
     @ResponseBody
     public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.findAll());
+        List<User> users = userService.findAll();
+        Collections.reverse(users);
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/byId/{id}")
@@ -59,7 +63,7 @@ public class UserController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<User> addNewUser(@RequestBody User user) {
+    public ResponseEntity<User> addNewUser(@RequestBody User user) throws ExecutionException, InterruptedException {
         userService.todayCompilationUser(user);
 //        user.setUsingTime(new Date());
         return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
@@ -67,7 +71,7 @@ public class UserController {
 
 
     @PutMapping("/updateById/{id}")
-    public ResponseEntity<User> updateById(@PathVariable String id, @RequestBody User user) {
+    public ResponseEntity<User> updateById(@PathVariable String id, @RequestBody User user) throws ExecutionException, InterruptedException {
         User userFromDb = userService.findById(id);
 
         if (userFromDb == null) {

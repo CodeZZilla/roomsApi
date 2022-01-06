@@ -28,6 +28,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Component
 @Slf4j
@@ -69,7 +70,7 @@ public class AutoUpdateApartmentsManager {
         List<Apartments> apartmentsList = apartmentsService.findAll();
         List<User> users = userService.findAll();
 
-        for (Apartments apartment : apartmentsList) {
+        apartmentsList.forEach(apartment ->  {
             LocalDate localDateLastUpdate = LocalDate.parse(apartment.getLastUpdateDate());
             int days = Days.daysBetween(localDateLastUpdate, LocalDate.now()).getDays();
 
@@ -77,19 +78,19 @@ public class AutoUpdateApartmentsManager {
                 System.out.println(days + " - days\n" + apartment.getLastUpdateDate() + " - deleted");
                 apartmentsService.deleteByInternalId(apartment.getInternalId());
             }
-        }
+        });
 
-        for (var item : users) {
+        users.forEach(item -> {
             userService.todayCompilationUser(item);
             System.out.println("today compilation " + item.getName() + "\n" + item.getTodayCompilation().size());
-        }
+        });
 
         System.out.println("save users");
         userService.saveAll(users);
     }
 
     @Scheduled(cron = "0 0 0 * * *", zone = "GMT+3")
-    public void todayCompilation() {
+    public void todayCompilation() throws ExecutionException, InterruptedException {
         List<User> users = userService.findAll();
         for (User user : users) {
             userService.todayCompilationUser(user);
