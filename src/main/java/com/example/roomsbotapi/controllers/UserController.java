@@ -2,17 +2,21 @@ package com.example.roomsbotapi.controllers;
 
 import com.example.roomsbotapi.models.User;
 import com.example.roomsbotapi.services.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.joda.time.LocalDateTime;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -22,7 +26,9 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class UserController {
 
+
     private final UserService userService;
+    private RestTemplate restTemplate;
 
     @GetMapping
     @ResponseBody
@@ -32,8 +38,41 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping("/getPhoto/{idTelegram}")
+    @Async
+    public CompletableFuture<ResponseEntity<Object>> getPhotoUser(@PathVariable String idTelegram) throws JsonProcessingException {
+        ResponseEntity<String> response = restTemplate.getForEntity(
+                "https://api.telegram.org/bot2069670508:AAFR_4gwUKymhGc7oiTLvq17d-nyYm6mY6A/getUserProfilePhotos?user_id=" + idTelegram,
+                String.class);
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode root = mapper.readTree(response.getBody());
+
+        if (root.path("result").path("photos").toString().equals("[]")) {
+            return CompletableFuture.completedFuture(ResponseEntity.ok("notFoundImage"));
+        }
+
+        String fileId = root.path("result").path("photos").get(0).get(1).path("file_id").toString().replace('"', ' ').trim();
+        ResponseEntity<String> secondResponse = restTemplate.getForEntity(
+                "https://api.telegram.org/bot2069670508:AAFR_4gwUKymhGc7oiTLvq17d-nyYm6mY6A/getFile?file_id=" + fileId,
+                String.class
+        );
+
+        root = mapper.readTree(secondResponse.getBody());
+        String filePath = root.path("result").path("file_path").toString().replace('"', ' ').trim();
+
+        ResponseEntity<byte[]> imageString = restTemplate.getForEntity("https://api.telegram.org/file/bot2069670508:AAFR_4gwUKymhGc7oiTLvq17d-nyYm6mY6A/" + filePath,
+                byte[].class);
+        byte[] image = imageString.getBody();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
+        headers.setContentLength(Objects.requireNonNull(image).length);
+
+        return CompletableFuture.completedFuture(new ResponseEntity<>(image, headers, HttpStatus.OK));
+    }
+
     @GetMapping("/byId/{id}")
     public ResponseEntity<User> getUser(@PathVariable String id) {
+        User user = userService.findById(id);
         return ResponseEntity.ok(userService.findById(id));
     }
 
@@ -41,11 +80,10 @@ public class UserController {
     @ResponseBody
     public ResponseEntity<User> getOneUser(@PathVariable String idTelegram) {
         User user = userService.findByIdTelegram(idTelegram);
-//        user.setUsingTime(new Date());
+
         if (user == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-
         return ResponseEntity.ok(user);
     }
 
@@ -111,12 +149,12 @@ public class UserController {
         try {
             List<User> users = new ArrayList<>();
 
-                for (String item : id) {
-                    User user = userService.findById(item);
-                    if (user != null) {
-                        users.add(user);
-                    }
+            for (String item : id) {
+                User user = userService.findById(item);
+                if (user != null) {
+                    users.add(user);
                 }
+            }
 
             userService.deleteAll(users);
         } catch (EmptyResultDataAccessException ex) {

@@ -5,16 +5,21 @@ import com.example.roomsbotapi.models.Security.Role;
 import com.example.roomsbotapi.models.Security.UsersAuth;
 import com.example.roomsbotapi.repository.RoleRepository;
 import com.example.roomsbotapi.repository.UserAuthRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.Date;
+import java.util.Map;
 
 @SpringBootApplication
 @EnableScheduling
@@ -28,7 +33,6 @@ public class RoomsBotApiApplication {
     @Bean
     CommandLineRunner init(UserAuthRepository repository, RoleRepository roleRepository) {
         return args -> {
-
             if (!repository.existsByUsername("rooms")) {
 
                 Role role = new Role();
