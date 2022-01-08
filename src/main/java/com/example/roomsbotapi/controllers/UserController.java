@@ -17,7 +17,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,7 +24,6 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @CrossOrigin
 public class UserController {
-
 
     private final UserService userService;
     private RestTemplate restTemplate;
@@ -41,14 +39,28 @@ public class UserController {
     @GetMapping("/getPhoto/{idTelegram}")
     @Async
     public CompletableFuture<ResponseEntity<Object>> getPhotoUser(@PathVariable String idTelegram) throws JsonProcessingException {
-        ResponseEntity<String> response = restTemplate.getForEntity(
-                "https://api.telegram.org/bot2069670508:AAFR_4gwUKymhGc7oiTLvq17d-nyYm6mY6A/getUserProfilePhotos?user_id=" + idTelegram,
-                String.class);
+        HttpHeaders headers = new HttpHeaders();
         ObjectMapper mapper = new ObjectMapper();
-        JsonNode root = mapper.readTree(response.getBody());
+        JsonNode root;
+        headers.setContentType(MediaType.IMAGE_JPEG);
+
+        ResponseEntity<byte[]> notFoundImage = restTemplate.getForEntity(
+                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlf91yfOT2B7vCu4ikHj54dlXtsCAo7ZzeCw&usqp=CAU",
+                byte[].class);
+
+        try {
+            ResponseEntity<String> response = restTemplate.getForEntity(
+                    "https://api.telegram.org/bot2069670508:AAFR_4gwUKymhGc7oiTLvq17d-nyYm6mY6A/getUserProfilePhotos?user_id=" + idTelegram,
+                    String.class);
+            root = mapper.readTree(response.getBody());
+        } catch (Exception e) {
+            headers.setContentLength(Objects.requireNonNull(notFoundImage.getBody()).length);
+            return CompletableFuture.completedFuture(new ResponseEntity<>(notFoundImage.getBody(), headers, HttpStatus.OK));
+        }
 
         if (root.path("result").path("photos").toString().equals("[]")) {
-            return CompletableFuture.completedFuture(ResponseEntity.ok("notFoundImage"));
+            headers.setContentLength(Objects.requireNonNull(notFoundImage.getBody()).length);
+            return CompletableFuture.completedFuture(new ResponseEntity<>(notFoundImage.getBody(), headers, HttpStatus.OK));
         }
 
         String fileId = root.path("result").path("photos").get(0).get(1).path("file_id").toString().replace('"', ' ').trim();
@@ -63,7 +75,7 @@ public class UserController {
         ResponseEntity<byte[]> imageString = restTemplate.getForEntity("https://api.telegram.org/file/bot2069670508:AAFR_4gwUKymhGc7oiTLvq17d-nyYm6mY6A/" + filePath,
                 byte[].class);
         byte[] image = imageString.getBody();
-        HttpHeaders headers = new HttpHeaders();
+
         headers.setContentType(MediaType.IMAGE_JPEG);
         headers.setContentLength(Objects.requireNonNull(image).length);
 
@@ -72,7 +84,6 @@ public class UserController {
 
     @GetMapping("/byId/{id}")
     public ResponseEntity<User> getUser(@PathVariable String id) {
-        User user = userService.findById(id);
         return ResponseEntity.ok(userService.findById(id));
     }
 
@@ -101,15 +112,14 @@ public class UserController {
     }
 
     @PostMapping("/add")
-    public ResponseEntity<User> addNewUser(@RequestBody User user) throws ExecutionException, InterruptedException {
+    public ResponseEntity<User> addNewUser(@RequestBody User user) {
         userService.todayCompilationUser(user);
-//        user.setUsingTime(new Date());
         return new ResponseEntity<>(userService.save(user), HttpStatus.CREATED);
     }
 
 
     @PutMapping("/updateById/{id}")
-    public ResponseEntity<User> updateById(@PathVariable String id, @RequestBody User user) throws ExecutionException, InterruptedException {
+    public ResponseEntity<User> updateById(@PathVariable String id, @RequestBody User user) {
         User userFromDb = userService.findById(id);
 
         if (userFromDb == null) {
@@ -135,8 +145,6 @@ public class UserController {
         userFromDb.setLanguage(user.getLanguage());
         userFromDb.setEmail(user.getEmail());
         userFromDb.setPhoneNumber(user.getPhoneNumber());
-
-//        userFromDb.setLastActivity(LocalDateTime.now());
 
         userService.todayCompilationUser(userFromDb);
         userService.save(userFromDb);
