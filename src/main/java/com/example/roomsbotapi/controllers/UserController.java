@@ -11,12 +11,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,7 +23,7 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class UserController {
 
-    private final UserService userService;
+    private UserService userService;
     private RestTemplate restTemplate;
 
     @GetMapping
@@ -37,8 +35,7 @@ public class UserController {
     }
 
     @GetMapping("/getPhoto/{idTelegram}")
-    @Async
-    public CompletableFuture<ResponseEntity<Object>> getPhotoUser(@PathVariable String idTelegram) throws JsonProcessingException {
+    public ResponseEntity<byte[]> getPhotoUser(@PathVariable String idTelegram) throws JsonProcessingException {
         HttpHeaders headers = new HttpHeaders();
         ObjectMapper mapper = new ObjectMapper();
         JsonNode root;
@@ -55,12 +52,12 @@ public class UserController {
             root = mapper.readTree(response.getBody());
         } catch (Exception e) {
             headers.setContentLength(Objects.requireNonNull(notFoundImage.getBody()).length);
-            return CompletableFuture.completedFuture(new ResponseEntity<>(notFoundImage.getBody(), headers, HttpStatus.OK));
+            return new ResponseEntity<>(notFoundImage.getBody(), headers, HttpStatus.OK);
         }
 
         if (root.path("result").path("photos").toString().equals("[]")) {
             headers.setContentLength(Objects.requireNonNull(notFoundImage.getBody()).length);
-            return CompletableFuture.completedFuture(new ResponseEntity<>(notFoundImage.getBody(), headers, HttpStatus.OK));
+            return new ResponseEntity<>(notFoundImage.getBody(), headers, HttpStatus.OK);
         }
 
         String fileId = root.path("result").path("photos").get(0).get(1).path("file_id").toString().replace('"', ' ').trim();
@@ -79,7 +76,7 @@ public class UserController {
         headers.setContentType(MediaType.IMAGE_JPEG);
         headers.setContentLength(Objects.requireNonNull(image).length);
 
-        return CompletableFuture.completedFuture(new ResponseEntity<>(image, headers, HttpStatus.OK));
+        return new ResponseEntity<>(image, headers, HttpStatus.OK);
     }
 
     @GetMapping("/byId/{id}")

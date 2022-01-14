@@ -4,15 +4,21 @@ import com.example.roomsbotapi.models.Apartments.Apartments;
 import com.example.roomsbotapi.models.User;
 import com.example.roomsbotapi.repository.ApartmentsRepository;
 import com.example.roomsbotapi.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -21,6 +27,7 @@ public class UserService {
 
     private final UserRepository repository;
     private final ApartmentsRepository apartmentsService;
+    private RestTemplate restTemplate;
 
     @Autowired
     public UserService(UserRepository repository, ApartmentsRepository apartmentsService) {
@@ -148,5 +155,6 @@ public class UserService {
             user.setTodayCompilation(internalId);
         }
     }
+
 
 }
