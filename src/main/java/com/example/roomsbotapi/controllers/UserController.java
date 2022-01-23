@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class UserController {
 
+
     private UserService userService;
     private RestTemplate restTemplate;
 

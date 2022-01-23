@@ -8,15 +8,16 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.List;
 
+@Document
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document
 public class Messages {
 
     @Id
     private String id;
 
-    private List<String> userTelegramId;
+    private List<String> telegramIds;
     private String messageText;
+    private Long time;
 }

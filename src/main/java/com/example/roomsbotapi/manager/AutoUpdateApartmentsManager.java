@@ -5,6 +5,7 @@ import com.example.roomsbotapi.models.Apartments.pojos.*;
 import com.example.roomsbotapi.models.User;
 import com.example.roomsbotapi.services.ApartmentsService;
 import com.example.roomsbotapi.services.UserService;
+import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.Days;
@@ -32,10 +33,11 @@ import java.util.concurrent.ExecutionException;
 
 @Component
 @Slf4j
+@NoArgsConstructor
 public class AutoUpdateApartmentsManager {
 
-    private final ApartmentsService apartmentsService;
-    private final UserService userService;
+    private  ApartmentsService apartmentsService;
+    private  UserService userService;
 
     @Autowired
     public AutoUpdateApartmentsManager(ApartmentsService apartmentsService, UserService userService) {
@@ -117,7 +119,7 @@ public class AutoUpdateApartmentsManager {
     }
 
 
-    @Async
+
     public void urlParser(String urlString) {
         try {
 
@@ -296,4 +298,6 @@ public class AutoUpdateApartmentsManager {
             log.error("network error");
         }
     }
+
+
 }
