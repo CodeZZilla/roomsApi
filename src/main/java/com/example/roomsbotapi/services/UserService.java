@@ -73,7 +73,7 @@ public class UserService {
         repository.saveAll(users);
     }
 
-    @Async
+//    @Async
     public void todayCompilationUser(User user) {
         if (user.getType() != null && user.getCity() != null
                 && user.getPriceMin() >= 0 && user.getPriceMax() != 0) {
