@@ -41,16 +41,15 @@ public class MessagesController {
                                 "https://api.telegram.org/bot2069670508:AAFR_4gwUKymhGc7oiTLvq17d-nyYm6mY6A/sendMessage?chat_id=" + id
                                         + "&text=" + messages.getMessageText()
                                 , String.class);
-                        System.out.println("send");
                     }
+                    log.info("send");
                 } catch (Exception ex) {
                     log.error(ex.getMessage());
                 }
             }
         };
 
-        Timer timer = new Timer();
-        timer.schedule(task, new Date(messages.getTime()));
+        new Timer("Timer message").schedule(task, new Date(messages.getTime()));
 
         return new ResponseEntity<>(messagesRepository.save(messages), HttpStatus.CREATED);
     }

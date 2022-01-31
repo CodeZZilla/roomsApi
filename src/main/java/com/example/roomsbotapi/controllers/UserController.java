@@ -1,6 +1,7 @@
 package com.example.roomsbotapi.controllers;
 
 import com.example.roomsbotapi.models.User;
+import com.example.roomsbotapi.services.TelegramApiService;
 import com.example.roomsbotapi.services.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -26,6 +28,7 @@ public class UserController {
 
     private UserService userService;
     private RestTemplate restTemplate;
+    private TelegramApiService telegramApiService;
 
     @GetMapping
     @ResponseBody
@@ -36,46 +39,11 @@ public class UserController {
     }
 
     @GetMapping("/getPhoto/{idTelegram}")
-    public ResponseEntity<byte[]> getPhotoUser(@PathVariable String idTelegram) throws JsonProcessingException {
+    public ResponseEntity<byte[]> getPhotoUser(@PathVariable String idTelegram) throws JsonProcessingException, ExecutionException, InterruptedException {
         HttpHeaders headers = new HttpHeaders();
-        ObjectMapper mapper = new ObjectMapper();
-        JsonNode root;
+        byte[] image = telegramApiService.getUserPhoto(idTelegram).get();
         headers.setContentType(MediaType.IMAGE_JPEG);
-
-        ResponseEntity<byte[]> notFoundImage = restTemplate.getForEntity(
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRlf91yfOT2B7vCu4ikHj54dlXtsCAo7ZzeCw&usqp=CAU",
-                byte[].class);
-
-        try {
-            ResponseEntity<String> response = restTemplate.getForEntity(
-                    "https://api.telegram.org/bot2069670508:AAFR_4gwUKymhGc7oiTLvq17d-nyYm6mY6A/getUserProfilePhotos?user_id=" + idTelegram,
-                    String.class);
-            root = mapper.readTree(response.getBody());
-        } catch (Exception e) {
-            headers.setContentLength(Objects.requireNonNull(notFoundImage.getBody()).length);
-            return new ResponseEntity<>(notFoundImage.getBody(), headers, HttpStatus.OK);
-        }
-
-        if (root.path("result").path("photos").toString().equals("[]")) {
-            headers.setContentLength(Objects.requireNonNull(notFoundImage.getBody()).length);
-            return new ResponseEntity<>(notFoundImage.getBody(), headers, HttpStatus.OK);
-        }
-
-        String fileId = root.path("result").path("photos").get(0).get(1).path("file_id").toString().replace('"', ' ').trim();
-        ResponseEntity<String> secondResponse = restTemplate.getForEntity(
-                "https://api.telegram.org/bot2069670508:AAFR_4gwUKymhGc7oiTLvq17d-nyYm6mY6A/getFile?file_id=" + fileId,
-                String.class
-        );
-
-        root = mapper.readTree(secondResponse.getBody());
-        String filePath = root.path("result").path("file_path").toString().replace('"', ' ').trim();
-
-        ResponseEntity<byte[]> imageString = restTemplate.getForEntity("https://api.telegram.org/file/bot2069670508:AAFR_4gwUKymhGc7oiTLvq17d-nyYm6mY6A/" + filePath,
-                byte[].class);
-        byte[] image = imageString.getBody();
-
-        headers.setContentType(MediaType.IMAGE_JPEG);
-        headers.setContentLength(Objects.requireNonNull(image).length);
+        headers.setContentLength(image.length);
 
         return new ResponseEntity<>(image, headers, HttpStatus.OK);
     }

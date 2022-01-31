@@ -30,9 +30,10 @@ public class UserService {
     private RestTemplate restTemplate;
 
     @Autowired
-    public UserService(UserRepository repository, ApartmentsRepository apartmentsService) {
+    public UserService(UserRepository repository, ApartmentsRepository apartmentsService, RestTemplate restTemplate) {
         this.repository = repository;
         this.apartmentsService = apartmentsService;
+        this.restTemplate = restTemplate;
     }
 
 
@@ -74,7 +75,7 @@ public class UserService {
         repository.saveAll(users);
     }
 
-//    @Async
+    @Async
     public void todayCompilationUser(User user) {
         if (user.getType() != null && user.getCity() != null
                 && user.getPriceMin() >= 0 && user.getPriceMax() != 0) {
@@ -155,6 +156,5 @@ public class UserService {
             user.setTodayCompilation(internalId);
         }
     }
-
 
 }

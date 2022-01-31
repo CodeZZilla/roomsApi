@@ -46,6 +46,7 @@ public class AutoUpdateApartmentsManager {
     }
 
     @Scheduled(fixedDelay = 3000000)
+    @Async
     public void apiParsingXml() {
 
         //Kiev
@@ -68,6 +69,7 @@ public class AutoUpdateApartmentsManager {
 
     @SneakyThrows
     @Scheduled(fixedDelay = 86400000, initialDelay = 15000)
+    @Async
     public void deleteOldApartments() {
         List<Apartments> apartmentsList = apartmentsService.findAll();
         List<User> users = userService.findAll();
@@ -82,17 +84,15 @@ public class AutoUpdateApartmentsManager {
             }
         });
 
-        users.forEach(item -> {
-            userService.todayCompilationUser(item);
-            System.out.println("today compilation " + item.getName() + "\n" + item.getTodayCompilation().size());
-        });
+        log.info("today compilation start...");
+        users.forEach(item -> userService.todayCompilationUser(item));
+        log.info("today compilation end");
 
-        System.out.println("save users");
         userService.saveAll(users);
     }
 
     @Scheduled(cron = "0 0 0 * * *", zone = "GMT+3")
-    public void todayCompilation() throws ExecutionException, InterruptedException {
+    public void todayCompilation() {
         List<User> users = userService.findAll();
         for (User user : users) {
             userService.todayCompilationUser(user);
@@ -106,7 +106,6 @@ public class AutoUpdateApartmentsManager {
         List<User> allUsers = userService.findAll();
 
         for (User user : allUsers) {
-
             if (user.getDaysOfSubscription() == 0)
                 continue;
 
@@ -120,7 +119,7 @@ public class AutoUpdateApartmentsManager {
 
 
 
-    public void urlParser(String urlString) {
+    private void urlParser(String urlString) {
         try {
 
             int countSaveData = 0, countContinueData = 0;

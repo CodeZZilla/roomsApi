@@ -23,6 +23,7 @@ import java.util.Map;
 
 @SpringBootApplication
 @EnableScheduling
+@EnableAsync
 public class RoomsBotApiApplication {
 
     public static void main(String[] args) {
