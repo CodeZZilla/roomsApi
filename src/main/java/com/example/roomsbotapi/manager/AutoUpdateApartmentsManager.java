@@ -69,7 +69,6 @@ public class AutoUpdateApartmentsManager {
 
     @SneakyThrows
     @Scheduled(fixedDelay = 86400000, initialDelay = 15000)
-    @Async
     public void deleteOldApartments() {
         List<Apartments> apartmentsList = apartmentsService.findAll();
         List<User> users = userService.findAll();

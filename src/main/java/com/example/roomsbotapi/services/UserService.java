@@ -27,13 +27,11 @@ public class UserService {
 
     private final UserRepository repository;
     private final ApartmentsRepository apartmentsService;
-    private RestTemplate restTemplate;
 
     @Autowired
-    public UserService(UserRepository repository, ApartmentsRepository apartmentsService, RestTemplate restTemplate) {
+    public UserService(UserRepository repository, ApartmentsRepository apartmentsService) {
         this.repository = repository;
         this.apartmentsService = apartmentsService;
-        this.restTemplate = restTemplate;
     }
 
 
