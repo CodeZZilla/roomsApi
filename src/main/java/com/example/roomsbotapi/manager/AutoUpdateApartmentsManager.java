@@ -94,7 +94,7 @@ public class AutoUpdateApartmentsManager {
         userService.saveAll(users);
     }
 
-    @Scheduled(cron = "0 0 0 * * *", zone = "GMT+3")
+    @Scheduled(cron = "0 0 0 * * *")
     public void todayCompilation() {
         List<User> users = userService.findAll();
         for (User user : users) {
@@ -104,7 +104,7 @@ public class AutoUpdateApartmentsManager {
         userService.saveAll(users);
     }
 
-    @Scheduled(cron = "0 0 0 * * *", zone = "GMT+3")
+    @Scheduled(cron = "0 0 0 * * *")
     public void updateDaysOfSubscription() {
         List<User> allUsers = userService.findAll();
 
@@ -120,8 +120,15 @@ public class AutoUpdateApartmentsManager {
         }
     }
 
-    @Scheduled(cron = "30 9 * * * *", zone = "GMT+3")
+    @Scheduled(cron = "0 30 9 * * *")
     public void newApartments() throws ExecutionException, InterruptedException {
+
+//        User user = userService.findByIdTelegram("441909209");
+//        if (user.getLanguage().equals("ua"))
+//            telegramApiService.sendMessage(user.getIdTelegram(), "ua");
+//        else if (user.getLanguage().equals("en"))
+//            telegramApiService.sendMessage(user.getIdTelegram(), "en");
+
         List<User> userList = userService.findAll();
 
         for (var user : userList) {
@@ -135,7 +142,6 @@ public class AutoUpdateApartmentsManager {
             user.setNewApartments(new ArrayList<>(idApartments));
             userService.save(user);
 
-            System.out.println(idApartments.size());
             if (idApartments.size() != 0) {
                 if (user.getLanguage().equals("ua"))
                     telegramApiService.sendMessage(user.getIdTelegram(), "Привіт! За останюю добу з'явилося " + idApartments.size()
