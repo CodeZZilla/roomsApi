@@ -28,7 +28,6 @@ import java.util.Map;
 public class RoomsBotApiApplication {
 
     public static void main(String[] args) {
-        System.out.println(LocalDate.now());
         SpringApplication.run(RoomsBotApiApplication.class, args);
     }
 

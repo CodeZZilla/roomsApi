@@ -120,7 +120,7 @@ public class AutoUpdateApartmentsManager {
         }
     }
 
-    @Scheduled(cron = "0 30 9 1/1 * ? *", zone = "GMT+3")
+    @Scheduled(cron = "30 9 * * * *", zone = "GMT+3")
     public void newApartments() throws ExecutionException, InterruptedException {
         List<User> userList = userService.findAll();
 
