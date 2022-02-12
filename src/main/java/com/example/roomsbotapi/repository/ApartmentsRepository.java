@@ -3,16 +3,22 @@ package com.example.roomsbotapi.repository;
 import com.example.roomsbotapi.models.Apartments.Apartments;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Repository
 public interface ApartmentsRepository extends MongoRepository<Apartments, String> {
 
-    Apartments findByInternalId(Long id);
+    @Async
+    CompletableFuture<Apartments> findByInternalId(Long id);
 
     void deleteByInternalId(Long id);
+
+//    @Query("{'creationDate': {'$gt' : ?0}}")
+    List<Apartments> findAllByCreationDate(String date);
 
     //1
     @Query("{'type': ?0, 'location.locationName': ?1, 'category': ?2}")

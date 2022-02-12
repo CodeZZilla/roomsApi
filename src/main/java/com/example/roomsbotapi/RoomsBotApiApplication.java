@@ -7,6 +7,7 @@ import com.example.roomsbotapi.repository.RoleRepository;
 import com.example.roomsbotapi.repository.UserAuthRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.joda.time.LocalDate;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -27,6 +28,7 @@ import java.util.Map;
 public class RoomsBotApiApplication {
 
     public static void main(String[] args) {
+        System.out.println(LocalDate.now());
         SpringApplication.run(RoomsBotApiApplication.class, args);
     }
 

@@ -2,6 +2,7 @@ package com.example.roomsbotapi.controllers;
 
 import com.example.roomsbotapi.models.Messages;
 import com.example.roomsbotapi.repository.MessagesRepository;
+import com.example.roomsbotapi.services.TelegramApiService;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -22,12 +24,12 @@ import java.util.TimerTask;
 public class MessagesController {
 
     private MessagesRepository messagesRepository;
-    private RestTemplate restTemplate;
+    private TelegramApiService telegramApiService;
 
     @Autowired
-    public MessagesController(MessagesRepository messagesRepository, RestTemplate restTemplate) {
+    public MessagesController(MessagesRepository messagesRepository,  TelegramApiService telegramApiService) {
         this.messagesRepository = messagesRepository;
-        this.restTemplate = restTemplate;
+        this.telegramApiService = telegramApiService;
     }
 
     @PostMapping("/add")
@@ -37,20 +39,17 @@ public class MessagesController {
             public void run() {
                 try {
                     for (var id : messages.getTelegramIds()) {
-                        restTemplate.getForEntity(
-                                "https://api.telegram.org/bot2069670508:AAFR_4gwUKymhGc7oiTLvq17d-nyYm6mY6A/sendMessage?chat_id=" + id
-                                        + "&text=" + messages.getMessageText()
-                                , String.class);
+                        telegramApiService.sendMessage(id, messages.getMessageText());
                     }
-                    log.info("send");
+                    log.info("send " + LocalDateTime.now());
                 } catch (Exception ex) {
                     log.error(ex.getMessage());
                 }
             }
         };
+        Messages messagesSaved = messagesRepository.save(messages);
+        new Timer("Timer message").schedule(task, new Date(Long.parseLong(messages.getTime())));
 
-        new Timer("Timer message").schedule(task, new Date(messages.getTime()));
-
-        return new ResponseEntity<>(messagesRepository.save(messages), HttpStatus.CREATED);
+        return new ResponseEntity<>(messagesSaved, HttpStatus.CREATED);
     }
 }

@@ -4,6 +4,7 @@ import com.example.roomsbotapi.models.Apartments.Apartments;
 import com.example.roomsbotapi.models.Apartments.pojos.*;
 import com.example.roomsbotapi.models.User;
 import com.example.roomsbotapi.services.ApartmentsService;
+import com.example.roomsbotapi.services.TelegramApiService;
 import com.example.roomsbotapi.services.UserService;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -28,7 +29,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 @Component
@@ -36,13 +39,15 @@ import java.util.concurrent.ExecutionException;
 @NoArgsConstructor
 public class AutoUpdateApartmentsManager {
 
-    private  ApartmentsService apartmentsService;
-    private  UserService userService;
+    private ApartmentsService apartmentsService;
+    private UserService userService;
+    private TelegramApiService telegramApiService;
 
     @Autowired
-    public AutoUpdateApartmentsManager(ApartmentsService apartmentsService, UserService userService) {
+    public AutoUpdateApartmentsManager(ApartmentsService apartmentsService, UserService userService, TelegramApiService telegramApiService) {
         this.apartmentsService = apartmentsService;
         this.userService = userService;
+        this.telegramApiService = telegramApiService;
     }
 
     @Scheduled(fixedDelay = 3000000)
@@ -66,14 +71,13 @@ public class AutoUpdateApartmentsManager {
         urlParser("https://v3api.citybase.com.ua/xml?city=Kharkov&section=rent_living&company=380935177996&published_in_days=5");
     }
 
-
     @SneakyThrows
     @Scheduled(fixedDelay = 86400000, initialDelay = 15000)
     public void deleteOldApartments() {
         List<Apartments> apartmentsList = apartmentsService.findAll();
         List<User> users = userService.findAll();
 
-        apartmentsList.forEach(apartment ->  {
+        apartmentsList.forEach(apartment -> {
             LocalDate localDateLastUpdate = LocalDate.parse(apartment.getLastUpdateDate());
             int days = Days.daysBetween(localDateLastUpdate, LocalDate.now()).getDays();
 
@@ -116,7 +120,46 @@ public class AutoUpdateApartmentsManager {
         }
     }
 
+    @Scheduled(cron = "0 30 9 1/1 * ? *", zone = "GMT+3")
+    public void newApartments() throws ExecutionException, InterruptedException {
+        List<User> userList = userService.findAll();
 
+        for (var user : userList) {
+            Set<Long> idApartments = new HashSet<>();
+            for (var id : user.getTodayCompilation()) {
+                Apartments apartments = apartmentsService.findByInternalId(id);
+                if (apartments.getCreationDate().equals(LocalDate.now().toString()))
+                    idApartments.add(apartments.getInternalId());
+
+            }
+            user.setNewApartments(new ArrayList<>(idApartments));
+            userService.save(user);
+
+            System.out.println(idApartments.size());
+            if (idApartments.size() != 0) {
+                if (user.getLanguage().equals("ua"))
+                    telegramApiService.sendMessage(user.getIdTelegram(), "♂️Привіт! За останюю добу з'явилося " + idApartments.size()
+                            + " нових квартир за твоїми критеріями. Хочеш переглянути їх зараз?");
+                else if (user.getLanguage().equals("en"))
+                    telegramApiService.sendMessage(user.getIdTelegram(), "♂️Hello! There are " + idApartments.size() +
+                            " new offers matching your criteria. Do you wanna see them now?");
+            } else {
+                if (user.getLanguage().equals("ru"))
+                    telegramApiService.sendMessage(user.getIdTelegram(), "️️Привіт! На жаль, за останню добу не з'явилося" +
+                            " жодного оголошення за твоїми критеріями. 1️⃣Ти можеш самостійно перевіряти нові оголошення" +
+                            " протягом дня, обираючи в \"меню\" розділ \"нові оголошення\" або 2️⃣Почекати наступного дня" +
+                            " і я вишлю тобі всі нові пропозиції, які з'явилися протягом доби. Тільки не сумуй - ось тобі круасан.");
+                else if (user.getLanguage().equals("en"))
+                    telegramApiService.sendMessage(user.getIdTelegram(), "♂️Hello! Sorry, there are no new offers " +
+                            "matching your criteria in the last 24 hours. 1️⃣You can check for new offers during the day by selecting the \"new offers\" " +
+                            "in the \"menu\" section. 2️⃣Wait until the next day. I will send you new offers which will appear during the 24 hours. " +
+                            "Don't worry - eat the croissant.");
+            }
+
+
+        }
+        System.out.println("end sends messages 9 30");
+    }
 
     private void urlParser(String urlString) {
         try {
@@ -296,6 +339,4 @@ public class AutoUpdateApartmentsManager {
             log.error("network error");
         }
     }
-
-
 }

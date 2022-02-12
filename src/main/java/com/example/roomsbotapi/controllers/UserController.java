@@ -4,18 +4,17 @@ import com.example.roomsbotapi.models.User;
 import com.example.roomsbotapi.services.TelegramApiService;
 import com.example.roomsbotapi.services.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -25,9 +24,7 @@ import java.util.stream.Collectors;
 @CrossOrigin
 public class UserController {
 
-
     private UserService userService;
-    private RestTemplate restTemplate;
     private TelegramApiService telegramApiService;
 
     @GetMapping
@@ -40,12 +37,9 @@ public class UserController {
 
     @GetMapping("/getPhoto/{idTelegram}")
     public ResponseEntity<byte[]> getPhotoUser(@PathVariable String idTelegram) throws JsonProcessingException, ExecutionException, InterruptedException {
-        HttpHeaders headers = new HttpHeaders();
         byte[] image = telegramApiService.getUserPhoto(idTelegram).get();
-        headers.setContentType(MediaType.IMAGE_JPEG);
-        headers.setContentLength(image.length);
 
-        return new ResponseEntity<>(image, headers, HttpStatus.OK);
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_JPEG).body(image);
     }
 
     @GetMapping("/byId/{id}")
@@ -111,6 +105,7 @@ public class UserController {
         userFromDb.setLanguage(user.getLanguage());
         userFromDb.setEmail(user.getEmail());
         userFromDb.setPhoneNumber(user.getPhoneNumber());
+        userFromDb.setNewApartments(user.getNewApartments());
 
         userService.todayCompilationUser(userFromDb);
         userService.save(userFromDb);

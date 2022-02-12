@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/api/apartments")
@@ -22,7 +23,7 @@ public class ApartmentsController {
 
     @ResponseBody
     @GetMapping("/find")
-    public ResponseEntity<List<Apartments>> findByIdRoom(@RequestParam(value = "id") long[] id) {
+    public ResponseEntity<List<Apartments>> findByIdRoom(@RequestParam(value = "id") long[] id) throws ExecutionException, InterruptedException {
         if (id == null)
             return new ResponseEntity<>(new ArrayList<>(), HttpStatus.NOT_FOUND);
 

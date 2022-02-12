@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class ApartmentsService {
@@ -21,6 +22,10 @@ public class ApartmentsService {
 
     public List<Apartments> findAll() {
         return repository.findAll();
+    }
+
+    public List<Apartments> findAllByCreationDate(String date) {
+        return  repository.findAllByCreationDate(date);
     }
 
 
@@ -43,8 +48,8 @@ public class ApartmentsService {
         return apartments.orElse(null);
     }
 
-    public Apartments findByInternalId(Long id) {
-        return repository.findByInternalId(id);
+    public Apartments findByInternalId(Long id) throws ExecutionException, InterruptedException {
+        return repository.findByInternalId(id).get();
     }
 
 

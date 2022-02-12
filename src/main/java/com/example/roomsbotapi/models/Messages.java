@@ -19,5 +19,5 @@ public class Messages {
 
     private List<String> telegramIds;
     private String messageText;
-    private Long time;
+    private String time;
 }

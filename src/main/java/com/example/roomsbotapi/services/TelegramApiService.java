@@ -3,6 +3,7 @@ package com.example.roomsbotapi.services;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
@@ -13,6 +14,7 @@ import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 @Service
+@Slf4j
 public class TelegramApiService {
 
     private static final String TOKEN = "2069670508:AAFR_4gwUKymhGc7oiTLvq17d-nyYm6mY6A";
@@ -23,6 +25,16 @@ public class TelegramApiService {
     @Autowired
     public TelegramApiService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
+    }
+
+    @Async
+    public void sendMessage(String idTelegram, String text) {
+        try {
+            restTemplate.getForEntity(
+                    "https://api.telegram.org/bot" + TOKEN + "/sendMessage?chat_id=" + idTelegram
+                            + "&text=" + text
+                    , String.class);
+        } catch (Exception ignored) { }
     }
 
     @Async

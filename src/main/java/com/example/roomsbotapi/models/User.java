@@ -40,5 +40,5 @@ public class User {
     private String language;
     private int freeCounterSearch;
     private int userStatus;
-
+    private List<Long> newApartments;
 }
