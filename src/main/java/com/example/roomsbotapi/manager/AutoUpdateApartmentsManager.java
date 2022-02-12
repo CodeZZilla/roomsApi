@@ -138,10 +138,10 @@ public class AutoUpdateApartmentsManager {
             System.out.println(idApartments.size());
             if (idApartments.size() != 0) {
                 if (user.getLanguage().equals("ua"))
-                    telegramApiService.sendMessage(user.getIdTelegram(), "♂️Привіт! За останюю добу з'явилося " + idApartments.size()
+                    telegramApiService.sendMessage(user.getIdTelegram(), "Привіт! За останюю добу з'явилося " + idApartments.size()
                             + " нових квартир за твоїми критеріями. Хочеш переглянути їх зараз?");
                 else if (user.getLanguage().equals("en"))
-                    telegramApiService.sendMessage(user.getIdTelegram(), "♂️Hello! There are " + idApartments.size() +
+                    telegramApiService.sendMessage(user.getIdTelegram(), "Hello! There are " + idApartments.size() +
                             " new offers matching your criteria. Do you wanna see them now?");
             } else {
                 if (user.getLanguage().equals("ru"))
@@ -150,7 +150,7 @@ public class AutoUpdateApartmentsManager {
                             " протягом дня, обираючи в \"меню\" розділ \"нові оголошення\" або 2️⃣Почекати наступного дня" +
                             " і я вишлю тобі всі нові пропозиції, які з'явилися протягом доби. Тільки не сумуй - ось тобі круасан.");
                 else if (user.getLanguage().equals("en"))
-                    telegramApiService.sendMessage(user.getIdTelegram(), "♂️Hello! Sorry, there are no new offers " +
+                    telegramApiService.sendMessage(user.getIdTelegram(), "Hello! Sorry, there are no new offers " +
                             "matching your criteria in the last 24 hours. 1️⃣You can check for new offers during the day by selecting the \"new offers\" " +
                             "in the \"menu\" section. 2️⃣Wait until the next day. I will send you new offers which will appear during the 24 hours. " +
                             "Don't worry - eat the croissant.");
