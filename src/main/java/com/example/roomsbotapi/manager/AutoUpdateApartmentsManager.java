@@ -123,12 +123,6 @@ public class AutoUpdateApartmentsManager {
     @Scheduled(cron = "0 30 9 * * *")
     public void newApartments() throws ExecutionException, InterruptedException {
 
-//        User user = userService.findByIdTelegram("441909209");
-//        if (user.getLanguage().equals("ua"))
-//            telegramApiService.sendMessage(user.getIdTelegram(), "ua");
-//        else if (user.getLanguage().equals("en"))
-//            telegramApiService.sendMessage(user.getIdTelegram(), "en");
-
         List<User> userList = userService.findAll();
 
         for (var user : userList) {
